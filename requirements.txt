@@ -1,0 +1,2 @@
+#Scraping 
+scrapy>=2.11
