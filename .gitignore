@@ -27,3 +27,7 @@ venv/
 
 # macOS
 .DS_Store
+
+# Ignore large crawled data, but keep the small sample
+data/*.json
+!data/sample.json

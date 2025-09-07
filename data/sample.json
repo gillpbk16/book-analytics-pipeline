@@ -1,142 +1,142 @@
 [
-    {
-        "url": "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
-        "price": "\u00a351.77",
-        "title": "A Light in the Attic",
-        "availability": "In stock",
-        "_id": "a48bc5eb48da3006d9e63bb62e3b9329135418b7ec61662d93f5a24e21ab0143"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
-        "price": "\u00a353.74",
-        "title": "Tipping the Velvet",
-        "availability": "In stock",
-        "_id": "bc2d423120d4d2cb0085fab1e23f6fad8d58a89dff949dee4bcec0d1cc9c0223"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/soumission_998/index.html",
-        "price": "\u00a350.10",
-        "title": "Soumission",
-        "availability": "In stock",
-        "_id": "ede3235c31648505386e13050101e3f49207c5caf700064e0948d739f52ae7a4"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/sharp-objects_997/index.html",
-        "price": "\u00a347.82",
-        "title": "Sharp Objects",
-        "availability": "In stock",
-        "_id": "cf4441b348bdf06b6a3ff0acbdc913d58018e1c58a620b1c11553012e7085018"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html",
-        "price": "\u00a354.23",
-        "title": "Sapiens: A Brief History of Humankind",
-        "availability": "In stock",
-        "_id": "db4e8596d744de06eec35eb6065129d936997df1619adcaf31a38c51b15a5ddd"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/the-requiem-red_995/index.html",
-        "price": "\u00a322.65",
-        "title": "The Requiem Red",
-        "availability": "In stock",
-        "_id": "35324cfd5ba85d9c87b8282c858e8c04fba34957c4e01da00f437ab052f7a064"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html",
-        "price": "\u00a333.34",
-        "title": "The Dirty Little Secrets of Getting Your Dream Job",
-        "availability": "In stock",
-        "_id": "d4005e511bf47c36e7045703625aedc3c699328d34c91947358ea377431fd44c"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html",
-        "price": "\u00a317.93",
-        "title": "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
-        "availability": "In stock",
-        "_id": "29d255b0f5b442eb59dbf8fd5f819943dc03daa30117addea48c54bf9acb1f1b"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html",
-        "price": "\u00a322.60",
-        "title": "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
-        "availability": "In stock",
-        "_id": "74e9b3b1fe61ffc3d8073757bb1e49ddd783802e832bf31344f2755032491465"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/the-black-maria_991/index.html",
-        "price": "\u00a352.15",
-        "title": "The Black Maria",
-        "availability": "In stock",
-        "_id": "66ff9ce13ae7fb17af9fa0ffa0d5e8fdddc8e75bd879862c3ce6c79daf8594df"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/starving-hearts-triangular-trade-trilogy-1_990/index.html",
-        "price": "\u00a313.99",
-        "title": "Starving Hearts (Triangular Trade Trilogy, #1)",
-        "availability": "In stock",
-        "_id": "07a923e101aa7ff24d68ee596beb693f888bbdd64b6240aad538458f3e5dd6b6"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/shakespeares-sonnets_989/index.html",
-        "price": "\u00a320.66",
-        "title": "Shakespeare's Sonnets",
-        "availability": "In stock",
-        "_id": "17dbe07ef3b8b952a122345a9c9fdde58205a08a89d3c9f044365e79fa53dc92"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/set-me-free_988/index.html",
-        "price": "\u00a317.46",
-        "title": "Set Me Free",
-        "availability": "In stock",
-        "_id": "de04a2287940e322f93b681fbdcacc259675bd7a05619379c6ba7886b7bd0a12"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html",
-        "price": "\u00a352.29",
-        "title": "Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)",
-        "availability": "In stock",
-        "_id": "72ed36011bf860e6b614c06b742b06a16a4b161010d3fd38d93f99a2cb528e0b"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html",
-        "price": "\u00a335.02",
-        "title": "Rip it Up and Start Again",
-        "availability": "In stock",
-        "_id": "1de8344fd4455b44ecfa7fec623b2050399e98b003a7bb4a5bda4210199d9763"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html",
-        "price": "\u00a357.25",
-        "title": "Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991",
-        "availability": "In stock",
-        "_id": "fe3483af53a064b307c6f9df2089274f6a7b8a05e717af749a1e913c178d822a"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/olio_984/index.html",
-        "price": "\u00a323.88",
-        "title": "Olio",
-        "availability": "In stock",
-        "_id": "07ad97206a87f96e382e630f4eb264cfc7eb2f254b95008444899842383dc517"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html",
-        "price": "\u00a337.59",
-        "title": "Mesaerion: The Best Science Fiction Stories 1800-1849",
-        "availability": "In stock",
-        "_id": "52269db75c5d4992b9845b042b378e9bcc5c82075b36c21f0225148ba3387942"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/libertarianism-for-beginners_982/index.html",
-        "price": "\u00a351.33",
-        "title": "Libertarianism for Beginners",
-        "availability": "In stock",
-        "_id": "14119f2e33dfe7d8e9f3a761be6beb96fd3eb2e5a49ca905a1f8d3d0782e3a95"
-    },
-    {
-        "url": "http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
-        "price": "\u00a345.17",
-        "title": "It's Only the Himalayas",
-        "availability": "In stock",
-        "_id": "8feb3979e412d42dbc0ab50235d50e69cbfa790515b84b6139b67948e191b019"
-    }
+  {
+    "url": "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "price": "£51.77",
+    "title": "A Light in the Attic",
+    "availability": "In stock",
+    "_id": "a48bc5eb48da3006d9e63bb62e3b9329135418b7ec61662d93f5a24e21ab0143"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+    "price": "£53.74",
+    "title": "Tipping the Velvet",
+    "availability": "In stock",
+    "_id": "bc2d423120d4d2cb0085fab1e23f6fad8d58a89dff949dee4bcec0d1cc9c0223"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/soumission_998/index.html",
+    "price": "£50.10",
+    "title": "Soumission",
+    "availability": "In stock",
+    "_id": "ede3235c31648505386e13050101e3f49207c5caf700064e0948d739f52ae7a4"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/sharp-objects_997/index.html",
+    "price": "£47.82",
+    "title": "Sharp Objects",
+    "availability": "In stock",
+    "_id": "cf4441b348bdf06b6a3ff0acbdc913d58018e1c58a620b1c11553012e7085018"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html",
+    "price": "£54.23",
+    "title": "Sapiens: A Brief History of Humankind",
+    "availability": "In stock",
+    "_id": "db4e8596d744de06eec35eb6065129d936997df1619adcaf31a38c51b15a5ddd"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/the-requiem-red_995/index.html",
+    "price": "£22.65",
+    "title": "The Requiem Red",
+    "availability": "In stock",
+    "_id": "35324cfd5ba85d9c87b8282c858e8c04fba34957c4e01da00f437ab052f7a064"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html",
+    "price": "£33.34",
+    "title": "The Dirty Little Secrets of Getting Your Dream Job",
+    "availability": "In stock",
+    "_id": "d4005e511bf47c36e7045703625aedc3c699328d34c91947358ea377431fd44c"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html",
+    "price": "£17.93",
+    "title": "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull",
+    "availability": "In stock",
+    "_id": "29d255b0f5b442eb59dbf8fd5f819943dc03daa30117addea48c54bf9acb1f1b"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html",
+    "price": "£22.60",
+    "title": "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+    "availability": "In stock",
+    "_id": "74e9b3b1fe61ffc3d8073757bb1e49ddd783802e832bf31344f2755032491465"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/the-black-maria_991/index.html",
+    "price": "£52.15",
+    "title": "The Black Maria",
+    "availability": "In stock",
+    "_id": "66ff9ce13ae7fb17af9fa0ffa0d5e8fdddc8e75bd879862c3ce6c79daf8594df"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/starving-hearts-triangular-trade-trilogy-1_990/index.html",
+    "price": "£13.99",
+    "title": "Starving Hearts (Triangular Trade Trilogy, #1)",
+    "availability": "In stock",
+    "_id": "07a923e101aa7ff24d68ee596beb693f888bbdd64b6240aad538458f3e5dd6b6"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/shakespeares-sonnets_989/index.html",
+    "price": "£20.66",
+    "title": "Shakespeare's Sonnets",
+    "availability": "In stock",
+    "_id": "17dbe07ef3b8b952a122345a9c9fdde58205a08a89d3c9f044365e79fa53dc92"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/set-me-free_988/index.html",
+    "price": "£17.46",
+    "title": "Set Me Free",
+    "availability": "In stock",
+    "_id": "de04a2287940e322f93b681fbdcacc259675bd7a05619379c6ba7886b7bd0a12"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html",
+    "price": "£52.29",
+    "title": "Scott Pilgrim's Precious Little Life (Scott Pilgrim #1)",
+    "availability": "In stock",
+    "_id": "72ed36011bf860e6b614c06b742b06a16a4b161010d3fd38d93f99a2cb528e0b"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html",
+    "price": "£35.02",
+    "title": "Rip it Up and Start Again",
+    "availability": "In stock",
+    "_id": "1de8344fd4455b44ecfa7fec623b2050399e98b003a7bb4a5bda4210199d9763"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html",
+    "price": "£57.25",
+    "title": "Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991",
+    "availability": "In stock",
+    "_id": "fe3483af53a064b307c6f9df2089274f6a7b8a05e717af749a1e913c178d822a"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/olio_984/index.html",
+    "price": "£23.88",
+    "title": "Olio",
+    "availability": "In stock",
+    "_id": "07ad97206a87f96e382e630f4eb264cfc7eb2f254b95008444899842383dc517"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html",
+    "price": "£37.59",
+    "title": "Mesaerion: The Best Science Fiction Stories 1800-1849",
+    "availability": "In stock",
+    "_id": "52269db75c5d4992b9845b042b378e9bcc5c82075b36c21f0225148ba3387942"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/libertarianism-for-beginners_982/index.html",
+    "price": "£51.33",
+    "title": "Libertarianism for Beginners",
+    "availability": "In stock",
+    "_id": "14119f2e33dfe7d8e9f3a761be6beb96fd3eb2e5a49ca905a1f8d3d0782e3a95"
+  },
+  {
+    "url": "http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html",
+    "price": "£45.17",
+    "title": "It's Only the Himalayas",
+    "availability": "In stock",
+    "_id": "8feb3979e412d42dbc0ab50235d50e69cbfa790515b84b6139b67948e191b019"
+  }
 ]
