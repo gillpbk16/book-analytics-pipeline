@@ -19,7 +19,8 @@ ADDONS = {}
 #USER_AGENT = "books (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
+
 
 # Concurrency and throttling settings
 #CONCURRENT_REQUESTS = 16
@@ -91,5 +92,14 @@ FEED_EXPORT_ENCODING = "utf-8"
 MONGO_URI = "mongodb://localhost:27017"
 MONGO_DATABASE = "books_db"
 
-LOG_LEVEL = "WARNING"
-LOG_FILE = "book_scraper.log"
+LOG_LEVEL = "INFO"
+#LOG_FILE = "book_scraper.log"
+LOG_ENABLED = True
+
+FEEDS = {
+    "../../data/sample_run.json": {
+        "format": "json",
+        "overwrite": True,
+        "encoding": "utf8",
+    }
+}
