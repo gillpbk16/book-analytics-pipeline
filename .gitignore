@@ -13,10 +13,17 @@ htmlcov/
 
 # Logs / temp
 *.log
+logs/
 
 # OS / IDE
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-EOF
+
+# Virtual Environments
+.venv/
+venv/
+
+# macOS
+.DS_Store
