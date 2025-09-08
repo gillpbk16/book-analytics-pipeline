@@ -48,10 +48,10 @@ Scrapes ~1000 books from Books to Scrape and stores in MongoDB with JSON backup.
 The backend exposes a FastAPI service at http://127.0.0.1:8000.
 
 Endpoints
-	•	GET /health – quick status check.
-	•	GET /books – list books with filters (q, price_min, price_max, availability, limit, offset, sort).
-	•	GET /analytics/availability – counts books by availability.
-	•	GET /analytics/price-stats – min / max / average book prices.
-	•	GET /analytics/price-buckets – histogram of prices (configurable bucket size).
-	•	GET /analytics/title-words – most frequent words in book titles.
+- GET /health – quick status check.
+- GET /books – list books with filters (q, price_min, price_max, availability, limit, offset, sort).
+- GET /analytics/availability – counts books by availability.
+- GET /analytics/price-stats – min / max / average book prices.
+- GET /analytics/price-buckets – histogram of prices (configurable bucket size).
+- GET /analytics/title-words – most frequent words in book titles.
 
