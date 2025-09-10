@@ -32,3 +32,7 @@ venv/
 # Ignore large crawled data, but keep the small sample
 data/*.json
 !data/sample.json
+
+#Frontend 
+frontend/.env.local
+frontend/.env.*.local 
