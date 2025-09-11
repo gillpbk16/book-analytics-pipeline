@@ -1,6 +1,14 @@
 import pytest
+import os
 from fastapi.testclient import TestClient
-from api.main import app
+
+
+os.environ["USE_MONGO"] = "false"
+
+import api.db
+api.db.load_books.cache_clear()
+
+from api.main import app 
 
 
 @pytest.fixture

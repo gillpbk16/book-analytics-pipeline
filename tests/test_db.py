@@ -1,13 +1,13 @@
-from api.db import _parse_prices
+from api.utils import parse_price
 
 def test_parse_prices_valid():
-    assert _parse_prices("$10.50") == 10.5
+    assert parse_price("$10.50") == 10.5
 
 def test_parse_prices_empty():
-    assert _parse_prices("") == None
+    assert parse_price("") == None
 
 def test_parse_prices_nan():
-    assert _parse_prices("nan") == None
+    assert parse_price("nan") == None
 
 def test_parse_prices_none():
-    assert _parse_prices(None) == None
+    assert parse_price(None) == None

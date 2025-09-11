@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
-from collections import Counter
-from api.db import load_books, DataLoadError
+from api.db import load_books, DataLoadError, list_books_mongo, USE_MONGO, price_stats_mongo, availability_mongo, price_buckets_mongo
 from api.models import BookOut, BooksResponse, AvailabilityResponse, PriceStats, PriceBucketsResponse, WordsResponse
-import string
 import logging
+import string
+from collections import Counter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -52,13 +52,13 @@ def health():
     ),
 )
 def get_books(
-    q: Optional[str] = Query(None, max_length=100, description="Substring matched against the book `title`."),
-    price_min: Optional[float] = Query(None, ge=0, description="Minimum price filter."),
-    price_max: Optional[float] = Query(None, ge=0, description="Maximum price filter."),
-    availability: Optional[str] = Query(None, max_length=50, description='Match on availability (e.g. "in stock").'),
-    limit: int = Query(20, ge=1, le=100, description="Page size"),
-    offset: int = Query(0, ge=0, description="Number of items to skip"),
-    sort: Optional[str] = Query(None, pattern="^(price_asc|price_desc|title_asc|title_desc)$", description='Sort order: "price_asc", "price_desc", "title_asc", or "title_desc".'),
+    q: Optional[str] = Query(None, max_length=100),
+    price_min: Optional[float] = Query(None, ge=0),
+    price_max: Optional[float] = Query(None, ge=0),
+    availability: Optional[str] = Query(None, max_length=50),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    sort: Optional[str] = Query(None, pattern="^(price_asc|price_desc|title_asc|title_desc)$"),
 ):
     """List books with optional filters.
 
@@ -72,49 +72,63 @@ def get_books(
     Returns: total number of matching books and a list of items.
     """
     try:
+        if USE_MONGO: 
+            total, items = list_books_mongo(
+                q=q,
+                price_min=price_min,
+                price_max=price_max,
+                availability=availability,
+                limit=limit,
+                offset=offset,
+                sort=sort,
+            )
+            return {"total": total, "items": [BookOut(**it) for it in items]}
+        
         items = load_books()
-    except DataLoadError as e:
+        if q: 
+            q_l = q.lower()
+            items = [item for item in items if q_l in item.get("title", "").lower()]
+
+        # Availability Filter
+        if availability:
+            wanted = availability.strip().lower()
+            items = [item for item in items if (item.get("availability") or "").strip().lower() == wanted]
+
+        #Price Filters
+        if price_min is not None:
+            items = [item for item in items if (item.get("price") is not None and item.get("price") >= price_min)]
+        if price_max is not None:
+            items = [item for item in items if (item.get("price") is not None and item.get("price") <= price_max)]
+
+        total = len(items)
+
+        # Sorting 
+        if sort: 
+            if sort.startswith("price_"):
+                items = sorted(
+                    items, 
+                    key=lambda x: (x.get("price") is None, x.get("price", 0)), 
+                    reverse=(sort == "price_desc")
+                )
+            elif sort.startswith("title_"):
+                items = sorted(
+                    items, 
+                    key=lambda x: x.get("title", "").lower(), 
+                    reverse=(sort == "title_desc")
+                )
+       
+        # Pagination
+        items = items[offset: offset + limit]
+        logger.info("GET /books returning %d items (total=%d)", len(items), total)
+        #wrap in an object
+        return {"total": total,
+                "items": [BookOut(**item) for item in items],
+                } 
+    except DataLoadError as e: 
         raise HTTPException(status_code=503, detail=str(e))
+    
 
-    # Text Filter
-    if q: 
-        q_l = q.lower()
-        items = [item for item in items if q_l in item.get("title", "").lower()]
-
-    # Availability Filter
-    if availability:
-        wanted = availability.strip().lower()
-        items = [item for item in items if (item.get("availability") or "").strip().lower() == wanted]
-
-    #Price Filters
-    if price_min is not None:
-        items = [item for item in items if (item.get("price") is not None and item.get("price") >= price_min)]
-    if price_max is not None:
-        items = [item for item in items if (item.get("price") is not None and item.get("price") <= price_max)]
-
-    total = len(items)
-    # Sorting 
-    if sort: 
-        if sort.startswith("price_"):
-            items = sorted(
-                items, 
-                key=lambda x: (x.get("price") is None, x.get("price", 0)), 
-                reverse=(sort == "price_desc")
-            )
-        elif sort.startswith("title_"):
-            items = sorted(
-                items, 
-                key=lambda x: x.get("title", "").lower(), 
-                reverse=(sort == "title_desc")
-            )
-    # Pagination
-    items = items[offset: offset + limit]
-
-    logger.info("GET /books returning %d items (total=%d)", len(items), total)
-    #wrap in an object
-    return {"total": total,
-            "items": [BookOut(**item) for item in items],
-            }
+    
 
 @app.get(
     "/analytics/availability",
@@ -136,16 +150,20 @@ def get_availability():
       }
     """
     try:
+        if USE_MONGO:
+            return availability_mongo()
+        
         items = load_books()
+        availability_counts = Counter(
+        (item.get("availability") or "unknown").strip().lower() for item in items
+        )
+
+        total = sum(availability_counts.values())
+        buckets = [{"label": label, "count": count} for label, count in availability_counts.items()]
+        return {"total": total, "buckets": buckets}
     except DataLoadError as e:
         raise HTTPException(status_code=503, detail=str(e))
-    availability_counts = Counter(
-        (item.get("availability") or "unknown").strip().lower() for item in items
-    )
-    total = sum(availability_counts.values())
-    buckets = [{"label": label, "count": count} for label, count in availability_counts.items()]
-    logger.info("Availability buckets computed: %s", buckets)
-    return {"total": total, "buckets": buckets}
+   
 
 @app.get(
     "/analytics/price-stats",
@@ -162,17 +180,20 @@ def get_price_stats():
       - min, max, average: price statistics
     """
     try:
+        if USE_MONGO:
+            return price_stats_mongo()
         items = load_books()
+        prices = [item["price"] for item in items if item.get("price") is not None]
+        count = len(prices)
+        if count == 0:
+            return {"count": 0, "min": None, "max": None, "average": None}
+        min_price = min(prices)
+        max_price = max(prices)
+        average_price = sum(prices) / count
+        return {"count": count, "min": min_price, "max": max_price, "average": average_price}
+    
     except DataLoadError as e:
         raise HTTPException(status_code=503, detail=str(e))
-    prices = [item["price"] for item in items if item.get("price") is not None]
-    count = len(prices)
-    if count == 0:
-        return {"count": 0, "min": None, "max": None, "average": None}
-    min_price = min(prices)
-    max_price = max(prices)
-    average_price = sum(prices) / count
-    return {"count": count, "min": min_price, "max": max_price, "average": average_price}
 
 @app.get("/analytics/price-buckets", response_model=PriceBucketsResponse)
 def get_price_buckets(bucket_size: float = Query(10.0, gt=0)):
@@ -189,6 +210,8 @@ def get_price_buckets(bucket_size: float = Query(10.0, gt=0)):
     Returns:
       {"buckets": [{"lower": <float>, "upper": <float>, "count": <int>}, ...]}
     """
+    if USE_MONGO:
+        return price_buckets_mongo(bucket_size)
     try:
         items = load_books()
     except DataLoadError as e:
