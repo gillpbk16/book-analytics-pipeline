@@ -73,7 +73,7 @@ pytest tests/test_api_mongo_min.py  # MongoDB integration tests
 
 ## Next Steps
 
-- Docker containerization
+- Docker containerisation
 - CI/CD pipeline
 - Production deployment
 - Additional data sources
