@@ -1,7 +1,7 @@
 import hashlib
 import pymongo
+import re
 from itemadapter import ItemAdapter
-from scrapy.exceptions import DropItem
 
 class MongoPipeline:
     COLLECTION_NAME = "books"
@@ -9,6 +9,8 @@ class MongoPipeline:
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
+        self.client = None
+        self.db = None
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -20,19 +22,42 @@ class MongoPipeline:
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
+        self.db[self.COLLECTION_NAME].create_index("url")
 
     def close_spider(self, spider):
-        self.client.close()
+        if self.client:
+            self.client.close()
+
 
     def process_item(self, item, spider):
-        item_id = self.compute_item_id(item)
-        if self.db[self.COLLECTION_NAME].find_one({"_id": item_id}):
-            return item
-        else:
-            item["_id"] = item_id
-            self.db[self.COLLECTION_NAME].update_one({"_id": item_id}, {"$set": ItemAdapter(item).asdict()}, upsert=True)
-            return item
+        adapter = ItemAdapter(item)
 
-    def compute_item_id(self, item):
-        url = item["url"]
-        return hashlib.sha256(url.encode("utf-8")).hexdigest()
+
+        raw = adapter.get("price", "")
+        price_num = None
+        if isinstance(raw, (int, float)):
+            price_num = float(raw)
+        elif isinstance(raw, str):
+            s = raw.replace(",", "")
+            m = re.search(r"\d+(\.\d+)?", s)
+            if m:
+                try:
+                    price_num = float(m.group(0))
+                except ValueError:
+                    price_num = None
+        adapter["price_num"] = price_num
+
+        url = adapter["url"]
+        _id = hashlib.sha256(url.encode("utf-8")).hexdigest()
+        adapter["_id"] = _id
+
+        self.db[self.COLLECTION_NAME].update_one(
+            {"_id": _id},
+            {"$set": adapter.asdict()},
+            upsert=True,
+        )
+        return item
+    
+    @staticmethod
+    def compute_item_id(url: str) -> str:
+        return hashlib.sha256(url.encode("utf-8")).hexdigest()    

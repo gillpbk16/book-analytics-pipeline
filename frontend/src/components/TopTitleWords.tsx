@@ -18,7 +18,6 @@ export default function TopTitleWords() {
                 const res = await bookAPI.getTitleWords(topN);
                 setData(res.data);
             } catch (e) {
-                console.error(e);
                 setError("Failed to load Title Words");
             } finally {
                 setLoading(false);
@@ -79,7 +78,7 @@ export default function TopTitleWords() {
                     id="top-n"
                     value={topN}
                     onChange={(e) => setTopN(Number(e.target.value))}
-                    className="h-9 rounded-lg border border-blue-300 bg-blue-50 px-3 text-sm text-blue-700 font-medium hover:bg-blue-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                    className="h-9 rounded-lg border border-violet-300 bg-violet-50 px-3 text-sm text-violet-700 font-medium hover:bg-violet-100 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none"
                     >
                     <option value={5}>5</option>
                     <option value={10}>10</option>
@@ -92,13 +91,13 @@ export default function TopTitleWords() {
                 {data.top.map((row, i) => (
                     <li
                     key={row.word} 
-                    className="flex items-center justify-between py-2 px-1 hover:bg-ray-50 rounded-md transition"
+                    className="flex items-center justify-between py-2 px-1 hover:bg-violet-50 rounded-md transition"
                     >
                         <div className="flex items center gap-3">
                             <span className="text-sm text-gray-400 w-6 text-right">{i + 1}.</span>
                             <span className="text-sm font-medium text-gray-900">{row.word}</span>
                         </div>
-                        <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-1 rounded-full">
+                        <span className="text-xs font-semibold text-violet-700 bg-violet-100 px-2 py-1 rounded-full">
                             {row.count}
                         </span>
                     </li>

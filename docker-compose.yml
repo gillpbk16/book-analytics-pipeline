@@ -7,7 +7,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-      - ./data:/docker-entrypoint-initdb.d
 
   api:
     build:
@@ -15,13 +14,36 @@ services:
       dockerfile: api/Dockerfile
     environment:
       USE_MONGO: "true"
+      # Use the service name "mongo" for in-network DNS
       MONGODB_URL: "mongodb://mongo:27017"
-      MONGODB_DB: "booksdb"
+      MONGODB_DB: "books_db"
       MONGODB_COLLECTION: "books"
     ports:
       - "8000:8000"
     depends_on:
       - mongo
+
+  web:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  scraper:
+    build:
+      context: .
+      dockerfile: scraper/Dockerfile
+    working_dir: /app/scraper/books
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DATABASE: books_db
+      LOG_LEVEL: INFO
+    depends_on:
+      - mongo
+    command: ["scrapy","crawl","book"]
+    restart: "no"
 
 volumes:
   mongo_data:

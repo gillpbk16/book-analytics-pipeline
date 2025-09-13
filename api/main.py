@@ -27,6 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"ok": True}
+
 @app.get(
     "/health",
     tags=["System"],

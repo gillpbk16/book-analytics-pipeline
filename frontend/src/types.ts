@@ -1,12 +1,14 @@
+export type BookAvailability = "in stock" | "out of stock";
+
 export type Book = {
     id: string;
     title: string;
     url: string;
     price: number | null;
-    availability: string;
+    availability: BookAvailability;
 }
 
-export type Booksresponse = {
+export type BooksResponse = {
     total: number;
     items: Book[]
 }
@@ -18,6 +20,13 @@ export type PriceStats = {
   average: number | null;
 }
 
+export type UsePriceStatsReturn = {
+    priceStats: PriceStats| null;
+    loading: boolean;
+    error: string | null;
+    refetch: () => Promise<void>;
+}
+
 export type AvailabilityBucket = {
     label: string; 
     count: number;
@@ -25,7 +34,7 @@ export type AvailabilityBucket = {
 
 export type AvailabilityResponse = {
     total: number;
-    buckets: AvailabilityBucket;
+    buckets: AvailabilityBucket[];
 }
 
 
@@ -46,4 +55,17 @@ export type WordRow = {
 
 export type WordsResponse = {
     top: WordRow[]
+}
+
+export type ApiResponse<T> = {
+    data: T;
+    status: number;
+    message?: string;
+
+}
+
+export type StatProps = {
+    label: string;
+    value: React.ReactNode;
+    loading?: boolean;
 }

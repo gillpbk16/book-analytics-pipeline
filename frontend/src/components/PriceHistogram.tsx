@@ -14,6 +14,18 @@ import {
 } from "chart.js";
 ChartJS.register(CategoryScale, LinearScale, BarElement, ChartTitle, Tooltip, Legend);
 
+function ChartLoadingSkeleton() {
+  return (
+    <div className="bg-white p-5 rounded-xl shadow-md h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
+        <div className="h-9 bg-gray-200 rounded w-20 animate-pulse"></div>
+      </div>
+      <div className="flex-1 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+  );
+}
+
 
 export default function PriceHistogram() {
     const [buckets, setBuckets] = useState<PriceBucket[]>([]);
@@ -31,7 +43,6 @@ export default function PriceHistogram() {
       try {
         const res = await bookAPI.getPriceBuckets(localBucketSize);
         if (cancelled) return;
-        console.log("Histogram raw data:", res.data);
         setBuckets(res.data.buckets);
         setError(null);
       } catch {
@@ -52,22 +63,23 @@ export default function PriceHistogram() {
     
 
 
-  if (loading || error || !buckets.length) {
+  if (loading) return <ChartLoadingSkeleton />;
+  if (error) {
     return (
       <div className="bg-white p-4 rounded-xl shadow-lg h-full flex items-center justify-center">
-        {loading && <div className="text-gray-600">Loading histogram…</div>}
-        {error && (
-          <div className="text-red-600 bg-red-50 px-4 py-2 rounded-lg" role="alert">
-            {error}
-          </div>
-        )}
-        {!loading && !error && !buckets.length && (
-          <div className="text-gray-600">No price data available.</div>
-        )}
+        <div className="text-red-600 bg-red-50 px-4 py-2 rounded-lg" role="alert">
+          {error}
+        </div>
       </div>
     );
   }
-
+  if (!buckets.length) {
+  return (
+      <div className="bg-white p-4 rounded-xl shadow-lg h-full flex items-center justify-center">
+        <div className="text-gray-600">No price data available.</div>
+      </div>
+    );
+  } 
   const labels = buckets.map(b => `£${b.lower.toFixed(0)}–£${b.upper.toFixed(0)}`);
   const data = {
     labels,
@@ -75,8 +87,8 @@ export default function PriceHistogram() {
       {
         label: "Books",
         data: buckets.map(b => b.count),
-        backgroundColor: "rgba(59,130,246,0.8)", 
-        hoverBackgroundColor: "rgba(37,99,235,0.9)", 
+        backgroundColor: "rgba(139,69,238,0.8)",
+        hoverBackgroundColor: "rgba(124,58,237,0.9)",
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 44,
@@ -100,7 +112,7 @@ export default function PriceHistogram() {
             id="bucket-size"
             value={localBucketSize}
             onChange={(e) => setLocalBucketSize(Number(e.target.value))}
-            className="h-9 rounded-md border border-blue-300 bg-blue-50 px-3 text-sm text-blue-700 font-medium hover:bg-blue-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="h-9 rounded-md border border-violet-300 bg-violet-50 px-3 text-sm text-violet-700 font-medium hover:bg-violet-100 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>

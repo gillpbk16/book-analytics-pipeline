@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { bookAPI } from "../services/api";
-import type { Booksresponse } from "../types";
+import type { Book, BooksResponse } from "../types";
 
 export default function Books() {
     const [q, setQ] = useState("");
@@ -12,7 +12,7 @@ export default function Books() {
     const [limit, setLimit] = useState(10);
     const [offset, setOffset] = useState(0);
 
-    const [data, setData] = useState<Booksresponse | null>(null);
+    const [data, setData] = useState<BooksResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -53,10 +53,6 @@ export default function Books() {
             setError(null);
 
             const params = buildAPIParams();
-
-            console.log("fetchBooks called with params:", params);
-            console.log("Current state:", { q, priceMin, priceMax, availability, sort, limit, offset });
-
             const res = await bookAPI.getBooks(params);
             setData(res.data);
         } catch (e) {
@@ -75,11 +71,6 @@ export default function Books() {
 
     useEffect( () => {
         const sp = new URLSearchParams(window.location.search);
-
-        console.log("Full URL:", window.location.href);
-        console.log("Search params:", window.location.search);
-        console.log("URLSearchParams object:", sp.toString());
-
         const q0 = sp.get("q") ?? "";
         const min0 = numOrUndef(sp.get("price_min"));
         const max0 = numOrUndef(sp.get("price_max"));
@@ -87,8 +78,6 @@ export default function Books() {
         const sort0 = (sp.get("sort") ?? "") as typeof sort;
         const limit0 = numOrUndef(sp.get("limit")) ?? 10;
         const offset0 = numOrUndef(sp.get("offset")) ?? 0;
-
-        console.log("Parsed values:", { q0, min0, max0, avail0, sort0, limit0, offset0 });
 
         setQ(q0);
         setPriceMin(min0);
@@ -174,11 +163,9 @@ export default function Books() {
             const items = res.data.items;
 
             if (!items || items.length === 0) {
-                alert("No data to export.");
+                console.log("No data available for export");
                 return;
             }
-
-            console.log("Items to export:", items);
 
             const headers = ["ID", "Title", "Price", "Availability", "URL"];
 
@@ -192,9 +179,6 @@ export default function Books() {
                     book.url || ""
                 ].join(','))
             ];
-
-            console.log("CSV rows:", csvRows);
-            console.log("Sample book object:", items[0]);
 
             const csvContent = csvRows.join('\n');
 
@@ -211,17 +195,15 @@ export default function Books() {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            console.log("CSV download triggered");
-
         } catch (error) { 
             console.error("Export failed:", error)
-            alert("Export failed.");
+            console.log("Export failed:", error);
         }
         
     }
 
     return(
-        <div className="h-full flex flex-col bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="h-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
             
             {/*Title*/}
             <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
@@ -236,11 +218,11 @@ export default function Books() {
                         </button>
                     )}
                     <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={async () => {
                             try {
                                 await navigator.clipboard.writeText(window.location.href);
-                                alert("Link Copied.");
+                                console.log("Link copied to clipboard");
                             } catch {
                                 prompt("Copy this URL:", window.location.href);
                             }
@@ -256,32 +238,32 @@ export default function Books() {
             </div>
 
             {/* Filters */}
-            <div className="flex-shrink-0 p-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex-shrink-0 p-4 bg-slate-100 border-b border-gray-200">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     <input
                         placeholder="Search Title"
                         value={qInput}
                         onChange={(e) => { setOffset(0); setQInput(e.target.value); }}
-                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
                     />
                     <input 
                         placeholder="Min price"
                         type="number"
                         value={priceMin ?? ""}
                         onChange={(e) => { setOffset(0); setPriceMin(e.target.value === "" ? undefined: Number(e.target.value)); }}
-                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
                     />
                     <input 
                         placeholder="Max price"
                         type="number"
                         value={priceMax ?? ""}
                         onChange={(e) => { setOffset(0); setPriceMax(e.target.value === "" ? undefined: Number(e.target.value)); }}
-                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
                     />
                     <select 
                         value={availability}
                         onChange={(e) => { setOffset(0); setAvailability(e.target.value); }}
-                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
                     >
                         <option value="">Any Availability</option>
                         <option value="in stock">In Stock</option>
@@ -290,7 +272,7 @@ export default function Books() {
                     <select 
                         value={sort}
                         onChange={(e) => { setOffset(0); setSort(e.target.value as any); }}
-                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
                     >
                         <option value="">Sort..</option>
                         <option value="price_asc">Price ↑</option>
@@ -301,7 +283,7 @@ export default function Books() {
                     <select 
                         value={limit}
                         onChange={(e) => { setOffset(0); setLimit(Number(e.target.value)); }}
-                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-colors"
                     >
                         <option value={5}>5 / page</option>
                         <option value={10}>10 / page</option>
@@ -324,13 +306,13 @@ export default function Books() {
 
                 {/*No Results*/}
                 {!loading && !error && data && data.items.length === 0 && (
-                    <div className="flex-1 flex items-center justify-center bg-white rounded-lg shadow-sm">
+                    <div className="flex-1 flex items-center justify-center bg-white rounded-lg shadow-md">
                         <div className="text-center">
                             <div className="text-gray-600 text-lg mb-4">No books match your filters</div>
                             {hasActiveFilters() && (
                                 <button 
                                     onClick={clearFilters}
-                                    className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+                                    className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-slate-100 transition-colors"
                                 >
                                     Clear all filters
                                 </button>
@@ -345,7 +327,7 @@ export default function Books() {
 
                         <div className="flex-1 overflow-auto">
                             <table className="w-full border-collapse table-auto">
-                                <thead className="bg-gray-50 sticky top-0">
+                                <thead className="bg-slate-100 sticky top-0">
                                     <tr>
                                         <th 
                                             scope="col" 
@@ -390,8 +372,8 @@ export default function Books() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data.items.map((b) => (
-                                        <tr key={b.id} className="hover:bg-gray-50 transition-colors">
+                                    {data.items.map((b: Book) => (
+                                        <tr key={b.id} className="hover:bg-slate-100 transition-colors">
                                             <td className="px-3 py-2.5 border-b border-gray-100 text-sm">
                                                 <a href={b.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors">{b.title}</a>
                                             </td>
@@ -415,13 +397,13 @@ export default function Books() {
                         
                         {/* Pagination */}
                         {!loading && !error && data && (
-                            <div className="flex-shrink-0 flex items-center justify-between gap-4 bg-gray-50 p-3 border-t border-gray-200">
+                            <div className="flex-shrink-0 flex items-center justify-between gap-4 bg-slate-100 p-3 border-t border-gray-200">
                                 <div className="flex gap-2">
                                     <button
                                         onClick={previousPage}
                                         disabled={offset === 0} 
                                         aria-disabled={offset === 0} 
-                                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >                                            
                                         Prev
                                     </button>
@@ -429,7 +411,7 @@ export default function Books() {
                                         onClick={nextPage} 
                                         disabled={offset + limit >= data.total} 
                                         aria-disabled={offset + limit >= data.total}
-                                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
                                     >
                                         Next
                                     </button>

@@ -1,4 +1,3 @@
-import React from "react";
 import Dashboard from "./components/Dashboard";
 import Books from "./components/Books";
 import PriceHistogram from "./components/PriceHistogram";
@@ -7,7 +6,7 @@ import TopTitleWords from "./components/TopTitleWords";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-100 flex flex-col">
       
       {/*Header*/}
       <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
