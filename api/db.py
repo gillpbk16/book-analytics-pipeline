@@ -214,7 +214,7 @@ def availability_mongo() -> Dict[str, Any]:
     return {"total": total, "buckets": buckets}
 
 
-def price_buckets_mongo(bucket_size: float) -> Dict[str, Any]:
+def price_buckets_mongo(bucket_size: float) -> Dict[str, Any]: 
     coll = get_collection()
 
     stats_pipeline = [
@@ -230,26 +230,53 @@ def price_buckets_mongo(bucket_size: float) -> Dict[str, Any]:
     ]
 
     stats_result = list(coll.aggregate(stats_pipeline))
-
     if not stats_result or stats_result[0]["count"]== 0: 
         return {"buckets": []}
     
     min_price = stats_result[0]["min_price"]
     max_price = stats_result[0]["max_price"]
-    
-    print(f"Debug: min_price={min_price}, max_price={max_price}, bucket_size={bucket_size}")
 
     num_buckets = int((max_price - min_price) / bucket_size) + 1
     
-    return {
-        "buckets": [
-            {
-                "lower": float(min_price),
-                "upper": float(min_price + bucket_size),
-                "count": 1
+    bucket_pipeline = [
+        {"$match": {"price_num": {"$ne": None}}},
+        {
+            "$addFields": {
+                "bucket_index": {
+                    "$floor": {
+                        "$divide": [
+                            {"$subtract": ["$price_num", min_price]},
+                            bucket_size
+                        ]
+                    }
+                }
             }
-        ]
-    }
+        },
+        {
+            "$group": {
+                "_id": "$bucket_index",
+                "count": {"$sum": 1}
+            }
+        },
+        {"$sort": {"_id": 1}}
+    ]
+    
+    bucket_results = list(coll.aggregate(bucket_pipeline))
+    
+    buckets = []
+    bucket_counts = {int(result["_id"]): result["count"] for result in bucket_results}
+    
+    for i in range(num_buckets):
+        lower = min_price + i * bucket_size
+        upper = lower + bucket_size
+        count = bucket_counts.get(i, 0)
+        buckets.append({
+            "lower": float(lower),
+            "upper": float(upper), 
+            "count": int(count)
+        })
+    
+    return {"buckets": buckets}
 
 
     

@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import { bookAPI } from "../services/api";
 import type { PriceStats } from "../types";
 
-const page: React.CSSProperties = { padding: 24, display: "grid", gap: 24, maxWidth: 1100, margin: "0 auto" };
-const panel: React.CSSProperties = { background: "#fff", padding: 16, borderRadius: 12, boxShadow: "0 8px 20px rgba(0,0,0,0.06)" };
-
 export default function Dashboard() {
     const[priceStats, setPriceStats] = useState<PriceStats | null>(null);
     const[loading, setLoading] = useState(true);
@@ -24,27 +21,47 @@ export default function Dashboard() {
         fetchStats();
     }, []);
 
-    if (loading) return <div>Loading..</div>;
-    if (error) return <div role="alert">{error}</div>
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[200px]">
+                <div className="text-gray-600">Loading...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-[200px]">
+                <div className="text-red-600 bg-red-50 px-4 py-2 rounded-lg" role="alert">
+                    {error}
+                </div>
+            </div>
+        );
+    } 
 
     return (
-        <div style={page}>
-            <h1>Book Analytics Dashboard</h1>
-            <div style={panel}>
-                <Stat label="With price" value={priceStats?.count ?? 0} />
-                <Stat label="min price" value={fmt(priceStats?.min)} />
-                <Stat label="Avg price" value={fmt(priceStats?.average)} />
-                <Stat label="max price" value={fmt(priceStats?.max)} />
+        <div className="rounded-xl border bg-white p-2 sm:p-3">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                <Stat label="With price" value={priceStats?.count ?? 0} /> 
+                <Stat label="Minimum price" value={fmt(priceStats?.min)} />
+                <Stat label="Average price" value={fmt(priceStats?.average)} />
+                <Stat label="Maximum price" value={fmt(priceStats?.max)} />            
             </div>
         </div>
+        
+
     );
 }
 
 function Stat({label , value}: {label: string; value: React.ReactNode}) {
     return(
-        <div style={{padding: 12, border: "1px solid #ddd", borderRadius: 8}}>
-            <div style={{ fontSize: 12, color: "#666" }}>{label}</div>
-            <div style={{ fontSize: 20, fontWeight: 600 }}>{value}</div>
+        <div className="p-1.5 border border-gray-200 rounded-lg bg-gray-50 hover:bg-blue-50 transition-colors duration-200 flex flex-col items-end">
+            <div className="text-xs text-gray-600 uppercase tracking-wide font-medium mb-0.5">
+                {label}
+            </div>
+            <div className="text-lg font-semibold text-gray-900">
+                {value}
+            </div>
         </div>
     );
 }

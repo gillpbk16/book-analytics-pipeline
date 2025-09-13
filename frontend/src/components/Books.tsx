@@ -2,15 +2,6 @@ import { useEffect, useState } from "react";
 import { bookAPI } from "../services/api";
 import type { Booksresponse } from "../types";
 
-const container: React.CSSProperties = { padding: 24, display: "grid", gap: 16, maxWidth: 1100, margin: "0 auto" };
-const controls: React.CSSProperties = { display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" };
-const tableWrap: React.CSSProperties = { overflowX: "auto", background: "#fff", borderRadius: 12, boxShadow: "0 8px 20px rgba(0,0,0,0.06)" };
-const tableStyle: React.CSSProperties = { width: "100%", borderCollapse: "collapse" };
-const th: React.CSSProperties = { textAlign: "left", padding: "10px 12px", borderBottom: "1px solid #eee", fontWeight: 600, fontSize: 14 };
-const td: React.CSSProperties = { padding: "10px 12px", borderBottom: "1px solid #f2f2f2", fontSize: 14 };
-const btn: React.CSSProperties = { padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", cursor: "pointer" };
-const btnDisabled: React.CSSProperties = { ...btn, opacity: 0.5, cursor: "not-allowed" };
-
 export default function Books() {
     const [q, setQ] = useState("");
     const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
@@ -142,7 +133,7 @@ export default function Books() {
             const newURL = qs ? `?${qs}` : window.location.pathname;
             window.history.replaceState(null, "", newURL);
         }   
-    }, [q, priceMin, priceMax, availability, sort, limit, offset]);
+    }, [q, priceMin, priceMax, availability, sort, limit, offset, isInitialLoad]);
 
     function nextPage() {
         if (!data) return;
@@ -230,142 +221,227 @@ export default function Books() {
     }
 
     return(
-        <div style={container}>
-            <h2 style={{ margin: 0}}>Books</h2>
+        <div className="h-full flex flex-col bg-white rounded-lg shadow-sm overflow-hidden">
+            
+            {/*Title*/}
+            <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900">Books</h2>
+                <div className="flex flex-wrap gap-2">
+                    {hasActiveFilters() && (
+                        <button
+                            onClick={clearFilters}
+                            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors"
+                        >
+                            Clear Filters
+                        </button>
+                    )}
+                    <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={async () => {
+                            try {
+                                await navigator.clipboard.writeText(window.location.href);
+                                alert("Link Copied.");
+                            } catch {
+                                prompt("Copy this URL:", window.location.href);
+                            }
+                        }}>
+                        Copy Link
+                    </button>
+                    <button
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={exportCSV}>
+                        Export CSV
+                    </button>
+                </div>
+            </div>
 
             {/* Filters */}
-            <div style={controls}>
-                <input
-                    placeholder="Search Title"
-                    value={qInput}
-                    onChange={(e) => { setOffset(0); setQInput(e.target.value); }}
-                />
-                <input 
-                    placeholder="Min price"
-                    type="number"
-                    value={priceMin ?? ""}
-                    onChange={(e) => { setOffset(0); setPriceMin(e.target.value === "" ? undefined: Number(e.target.value)); }}
-                />
-                <input 
-                    placeholder="Max price"
-                    type="number"
-                    value={priceMax ?? ""}
-                    onChange={(e) => { setOffset(0); setPriceMax(e.target.value === "" ? undefined: Number(e.target.value)); }}
-                />
-                <select 
-                    value={availability}
-                    onChange={(e) => { setOffset(0); setAvailability(e.target.value); }}
-                >
-                    <option value="">Any Availability</option>
-                    <option value="in stock">In Stock</option>
-                    <option value="out of stock">Out of Stock</option>
-                </select>
-                <select 
-                    value={sort}
-                    onChange={(e) => { setOffset(0); setSort(e.target.value as any); }}
-                >
-                    <option value="">Sort..</option>
-                    <option value="price_asc">Price ↑</option>
-                    <option value="price_desc">Price ↓</option>
-                    <option value="title_asc">Title A–Z</option>
-                    <option value="title_desc">Title Z–A</option>
-                </select>
-                <select 
-                    value={limit}
-                    onChange={(e) => { setOffset(0); setLimit(Number(e.target.value)); }}
-                >
-                    <option value={5}>5 / page</option>
-                    <option value={10}>10 / page</option>
-                    <option value={20}>20 / page</option>
-                    <option value={50}>50 / page</option>
-                </select>
-                <button
-                    onClick={async () => {
-                        try {
-                            await navigator.clipboard.writeText(window.location.href);
-                            alert("Link Copied.");
-                        } catch {
-                            prompt("Copy this URL:", window.location.href);
-                        }
-                    }}>
-                    Copy Link
-                </button>
-                <button onClick={exportCSV}>Export CSV</button>
+            <div className="flex-shrink-0 p-4 bg-gray-50 border-b border-gray-200">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <input
+                        placeholder="Search Title"
+                        value={qInput}
+                        onChange={(e) => { setOffset(0); setQInput(e.target.value); }}
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    />
+                    <input 
+                        placeholder="Min price"
+                        type="number"
+                        value={priceMin ?? ""}
+                        onChange={(e) => { setOffset(0); setPriceMin(e.target.value === "" ? undefined: Number(e.target.value)); }}
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    />
+                    <input 
+                        placeholder="Max price"
+                        type="number"
+                        value={priceMax ?? ""}
+                        onChange={(e) => { setOffset(0); setPriceMax(e.target.value === "" ? undefined: Number(e.target.value)); }}
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    />
+                    <select 
+                        value={availability}
+                        onChange={(e) => { setOffset(0); setAvailability(e.target.value); }}
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    >
+                        <option value="">Any Availability</option>
+                        <option value="in stock">In Stock</option>
+                        <option value="out of stock">Out of Stock</option>
+                    </select>
+                    <select 
+                        value={sort}
+                        onChange={(e) => { setOffset(0); setSort(e.target.value as any); }}
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    >
+                        <option value="">Sort..</option>
+                        <option value="price_asc">Price ↑</option>
+                        <option value="price_desc">Price ↓</option>
+                        <option value="title_asc">Title A–Z</option>
+                        <option value="title_desc">Title Z–A</option>
+                    </select>
+                    <select 
+                        value={limit}
+                        onChange={(e) => { setOffset(0); setLimit(Number(e.target.value)); }}
+                        className="min-w-[100px] border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    >
+                        <option value={5}>5 / page</option>
+                        <option value={10}>10 / page</option>
+                        <option value={20}>20 / page</option>
+                        <option value={50}>50 / page</option>
+                    </select>
+                </div>
             </div>
 
             {/* Status */}
-            {loading && <div>Loading...</div>}
-            {error && <div style={{ color: "crimson" }}>{error}</div>}
-
-            {/* Table */}
-            {!loading && !error && data && data.items.length === 0 && (
-                <div style={{ textAlign: "center", padding: "20px" }}>
-                    <div>No books match your filters</div>
-                    {hasActiveFilters() && (
-                        <button 
-                            onClick={clearFilters}
-                            style={{ ...btn, marginTop: "12px" }}
-                        >
-                            Clear all filters
-                        </button>
-                    )}
+            {(loading || error) && (
+                <div className="flex-shrink-0 px-4 py-2">
+                    {loading && <div className="text-blue-600 font-medium text-sm">Loading...</div>}
+                    {error && <div className="text-red-600 font-medium text-sm">{error}</div>}
                 </div>
             )}
+            
+            {/* Main Content Area - Flexible height */}
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
-            {!loading && !error && data && data.items.length > 0 && (
-                <div style={tableWrap}>
-                    <table style={tableStyle}>
-                        <thead>
-                            <tr>
-                                <th style={th}>
-                                    <button
-                                        onClick={() => {setOffset(0); setSort(cycleSort(sort, "title")); }}
-                                        style={{ all: "unset", cursor: "pointer", fontWeight: 600 }}
-                                        aria-label="Sort by title"
-                                        >
-                                            Title{sortIcon("title")}
-                                        </button>
-                                </th>
-                                <th style={th}>
-                                    <button
-                                        onClick={() => { setOffset(0); setSort(cycleSort(sort, "price")); }}
-                                        style={{ all: "unset", cursor: "pointer", fontWeight: 600 }}
-                                        aria-label="Sort by price"
-                                    >
-                                        Price{sortIcon("price")}
-                                    </button>
-                                </th>
-                                <th style={th}>Availability</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.items.map((b) => (
-                                <tr key={b.id}>
-                                    <td style={td}>
-                                        <a href={b.url} target="_blank" rel="noreferrer">{b.title}</a>
-                                    </td>
-                                    <td style={td} title={typeof b.price === "number" ? String(b.price) : ""}>
-                                        {typeof b.price === "number" ? `£${b.price.toFixed(2)}` : "—"}
-                                    </td>
-                                    <td style={td}>{b.availability}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* Pagination */}
-            {!loading && !error && data && (
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <button onClick={previousPage} disabled={offset === 0} aria-disabled={offset === 0} style={{ opacity: offset === 0 ? 0.5 : 1}}>Prev</button>
-                    <button onClick={nextPage} disabled={offset + limit >= data.total} aria-disabled={offset + limit >= data.total} style={offset + limit >= data.total ? btnDisabled : btn}>Next</button>
-                    <div style={{ marginLeft: 8, color: "#666" }}>
-                        Showing {Math.min(offset + 1, data.total)}–
-                        {Math.min(offset + limit, data.total)} of {data.total}
+                {/*No Results*/}
+                {!loading && !error && data && data.items.length === 0 && (
+                    <div className="flex-1 flex items-center justify-center bg-white rounded-lg shadow-sm">
+                        <div className="text-center">
+                            <div className="text-gray-600 text-lg mb-4">No books match your filters</div>
+                            {hasActiveFilters() && (
+                                <button 
+                                    onClick={clearFilters}
+                                    className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+                                >
+                                    Clear all filters
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+
+                {/* Table */}
+                {!loading && !error && data && data.items.length > 0 && (
+                    <div className="flex-1 flex flex-col overflow-hidden">
+
+                        <div className="flex-1 overflow-auto">
+                            <table className="w-full border-collapse table-auto">
+                                <thead className="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th 
+                                            scope="col" 
+                                            className="w-[60%] text-left px-3 py-2.5 border-b border-gray-200 font-semibold text-sm whitespace-nowrap" 
+                                            aria-sort={
+                                                sort?.startsWith("title")
+                                                ? (sort.endsWith("asc") ? "ascending" : "descending")
+                                                : "none"
+                                            }
+                                        >
+                                            <button
+                                                onClick={() => {setOffset(0); setSort(cycleSort(sort, "title")); }}
+                                                className="hover:text-blue-600 transition-colors font-semibold"
+                                                aria-label="Sort by title"
+                                            >
+                                                Title{sortIcon("title")}
+                                            </button>
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="w-[20%] text-left px-3 py-2.5 border-b border-gray-200 font-semibold text-sm whitespace-nowrap"
+                                            aria-sort={
+                                                sort?.startsWith("price")
+                                                ? (sort.endsWith("asc") ? "ascending" : "descending")
+                                                : "none"
+                                            }
+                                        >
+                                            <button
+                                                onClick={() => { setOffset(0); setSort(cycleSort(sort, "price")); }}
+                                                className="w-full text-left hover:text-blue-600 transition-colors font-semibold"                                                    
+                                                aria-label="Sort by price"
+                                            >
+                                                Price{sortIcon("price")}
+                                            </button>
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="w-[20%] text-left px-3 py-2.5 border-b border-gray-200 font-semibold text-sm whitespace-nowrap"
+                                        >
+                                            Availability 
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.items.map((b) => (
+                                        <tr key={b.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-3 py-2.5 border-b border-gray-100 text-sm">
+                                                <a href={b.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors">{b.title}</a>
+                                            </td>
+                                            <td className="px-3 py-2.5 border-b border-gray-100 text-sm font-medium" title={typeof b.price === "number" ? String(b.price) : ""}>
+                                                {typeof b.price === "number" ? `£${b.price.toFixed(2)}` : "—"}
+                                            </td>                                                
+                                            <td className="px-3 py-2.5 border-b border-gray-100 text-sm">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                    b.availability === 'in stock' 
+                                                        ? 'bg-red-100 text-red-800' 
+                                                        : 'bg-green-100 text-green-800'
+                                                }`}>
+                                                    {b.availability}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {/* Pagination */}
+                        {!loading && !error && data && (
+                            <div className="flex-shrink-0 flex items-center justify-between gap-4 bg-gray-50 p-3 border-t border-gray-200">
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={previousPage}
+                                        disabled={offset === 0} 
+                                        aria-disabled={offset === 0} 
+                                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >                                            
+                                        Prev
+                                    </button>
+                                    <button 
+                                        onClick={nextPage} 
+                                        disabled={offset + limit >= data.total} 
+                                        aria-disabled={offset + limit >= data.total}
+                                        className="px-3 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                                    >
+                                        Next
+                                    </button>
+                                </div> 
+                                <div className="text-xs text-gray-600">
+                                    {Math.min(offset + 1, data.total)}–{Math.min(offset + limit, data.total)} of {data.total}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
