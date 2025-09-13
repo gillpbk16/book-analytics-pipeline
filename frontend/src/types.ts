@@ -1,3 +1,5 @@
+
+// Book data types
 export type BookAvailability = "in stock" | "out of stock";
 
 export type Book = {
@@ -13,6 +15,7 @@ export type BooksResponse = {
     items: Book[]
 }
 
+// Price analytics types
 export type PriceStats = {
   count: number;
   min: number | null;
@@ -27,6 +30,7 @@ export type UsePriceStatsReturn = {
     refetch: () => Promise<void>;
 }
 
+// Availability analytics types
 export type AvailabilityBucket = {
     label: string; 
     count: number;
@@ -37,7 +41,7 @@ export type AvailabilityResponse = {
     buckets: AvailabilityBucket[];
 }
 
-
+// Price histogram types
 export type PriceBucket= {
     lower: number;
     upper: number; 
@@ -48,6 +52,7 @@ export type PriceBucketResponse = {
     buckets : PriceBucket[];
 }
 
+// Title words analytics types
 export type WordRow = {
     word: string;
     count: number;
@@ -57,6 +62,7 @@ export type WordsResponse = {
     top: WordRow[]
 }
 
+// Generic API and component types
 export type ApiResponse<T> = {
     data: T;
     status: number;

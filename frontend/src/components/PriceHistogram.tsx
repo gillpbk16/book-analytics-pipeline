@@ -12,8 +12,10 @@ import {
     Tooltip, 
     Legend,
 } from "chart.js";
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, ChartTitle, Tooltip, Legend);
 
+// Loading skeleton matching the chart component layout
 function ChartLoadingSkeleton() {
   return (
     <div className="bg-white p-5 rounded-xl shadow-md h-full flex flex-col">
@@ -26,7 +28,7 @@ function ChartLoadingSkeleton() {
   );
 }
 
-
+// Interactive price distribution histogram with configurable bucket sizes
 export default function PriceHistogram() {
     const [buckets, setBuckets] = useState<PriceBucket[]>([]);
     const [loading, setLoading] = useState(true);
@@ -80,7 +82,10 @@ export default function PriceHistogram() {
       </div>
     );
   } 
+
+  // Format bucket labels as price ranges
   const labels = buckets.map(b => `£${b.lower.toFixed(0)}–£${b.upper.toFixed(0)}`);
+  
   const data = {
     labels,
     datasets: [
@@ -100,8 +105,7 @@ export default function PriceHistogram() {
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-md h-full flex flex-col">
-      
-      {/*Header*/}
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900">Price Distribution</h2>
         <div className="flex items-center gap-2">

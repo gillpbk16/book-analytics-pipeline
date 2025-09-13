@@ -1,10 +1,17 @@
+"""
+Database setup script: adds price_num field and creates indexes.
+Run once after initial data import to optimize queries.
+"""
+
 import os
 import pymongo
 import sys
 
+#Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(__file__))) 
 from api.utils import parse_price
 
+#Database configuration
 MONGO_URI = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 DB_NAME = os.getenv("MONGODB_DB", "books_db")
 COLLECTION_NAME = os.getenv("MONGODB_COLLECTION", "books")

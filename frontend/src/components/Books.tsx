@@ -3,22 +3,27 @@ import { bookAPI } from "../services/api";
 import type { Book, BooksResponse } from "../types";
 
 export default function Books() {
+    // Filter state - manages search and filtering options
     const [q, setQ] = useState("");
     const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
     const [priceMax, setPriceMax] = useState<number | undefined>(undefined);
     const [availability, setAvailability] = useState("");
     const [sort, setSort] = useState<"price_asc" | "price_desc" | "title_asc" | "title_desc" | "">("");
 
+    // Pagination state - controls data display limits
     const [limit, setLimit] = useState(10);
     const [offset, setOffset] = useState(0);
 
+    // Data and UI state - manages loading, errors, and API responses
     const [data, setData] = useState<BooksResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+    // Debounced search input - prevents excessive API calls while user types
     const [qInput, setQInput] = useState<string>("");
 
+    // Cycle through sort states: none -> asc -> desc -> none
     function cycleSort(current: typeof sort, field: "price" | "title") {
         const asc = (field + "_asc") as typeof sort;
         const desc = (field + "_desc") as typeof sort;
@@ -28,12 +33,14 @@ export default function Books() {
         return asc;
     }
 
+    // Display sort indicators in table headers
     function sortIcon(field: "price" | "title") {
         if (sort == field + "_asc") return " ▲";
         if (sort == field + "_desc") return " ▼";
         return "";
     }
 
+    // Build API parameters object from current state
     function buildAPIParams() {
         const params: any = {
                 limit, 
@@ -47,6 +54,7 @@ export default function Books() {
         return params
     }
 
+    // Fetch books from API with current filters/pagination
     async function fetchBooks() {
         try {
             setLoading(true);
@@ -56,19 +64,21 @@ export default function Books() {
             const res = await bookAPI.getBooks(params);
             setData(res.data);
         } catch (e) {
-            console.error(e);
+            console.error("Failed to fetch books:", e);
             setError("Failed to load page.")
         } finally {
             setLoading(false);
         } 
     }
 
+    // Helper to parse URL parameters as numbers
     function numOrUndef(v: string | null) {
         if (v === null || v === "") return undefined
         const n = Number(v);
         return Number.isFinite(n) ? n : undefined;
     }
 
+    // Parse URL parameters on component mount - enables shareable URLs
     useEffect( () => {
         const sp = new URLSearchParams(window.location.search);
         const q0 = sp.get("q") ?? "";
@@ -91,10 +101,12 @@ export default function Books() {
 
     }, []);
 
+    // Sync qInput with q state for debounced search
     useEffect(() => {
         setQInput(q);
     }, [q]);
 
+    // Debounced search: wait 300ms after user stops typing to trigger search
     useEffect( () => {
         const t = setTimeout( () => {
             if (qInput !== q) {
@@ -105,10 +117,12 @@ export default function Books() {
         return () => clearTimeout(t);
     }, [qInput]);
 
+    // Fetch data and update URL when filters change - keeps URL in sync
     useEffect(() => {
         if (!isInitialLoad) {
             fetchBooks();
             
+            // Update URL to reflect current state (for sharing/bookmarking)
             const sp =  new URLSearchParams()
             if (q) sp.set("q", q);
             if (priceMin !== undefined) sp.set("price_min", String(priceMin));
@@ -124,6 +138,7 @@ export default function Books() {
         }   
     }, [q, priceMin, priceMax, availability, sort, limit, offset, isInitialLoad]);
 
+    // Pagination handlers
     function nextPage() {
         if (!data) return;
         const next = offset + limit;
@@ -137,6 +152,7 @@ export default function Books() {
         setOffset(previous);
     }
 
+    // Check if any filters are currently active
     function hasActiveFilters() {
         return !!(
             q || 
@@ -146,6 +162,8 @@ export default function Books() {
             sort
         );
     }
+
+    // Reset all filters to default state
     function clearFilters() {
         setQ("");
         setQInput("");
@@ -156,6 +174,7 @@ export default function Books() {
         setOffset(0);
     }
 
+    // Export current results as CSV file
     async function exportCSV() {  
         try {
             const params = buildAPIParams();
@@ -163,12 +182,11 @@ export default function Books() {
             const items = res.data.items;
 
             if (!items || items.length === 0) {
-                console.log("No data available for export");
                 return;
             }
 
+            // Generate CSV content
             const headers = ["ID", "Title", "Price", "Availability", "URL"];
-
             const csvRows = [
                 headers.join(","),
                 ...items.map(book => [
@@ -182,6 +200,7 @@ export default function Books() {
 
             const csvContent = csvRows.join('\n');
 
+            // Download CSV file
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
 
@@ -197,9 +216,16 @@ export default function Books() {
 
         } catch (error) { 
             console.error("Export failed:", error)
-            console.log("Export failed:", error);
         }
         
+    }
+
+    async function copyLink() {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+        } catch {
+            prompt("Copy this URL:", window.location.href);
+        }
     }
 
     return(
@@ -218,15 +244,9 @@ export default function Books() {
                         </button>
                     )}
                     <button
-                        className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={async () => {
-                            try {
-                                await navigator.clipboard.writeText(window.location.href);
-                                console.log("Link copied to clipboard");
-                            } catch {
-                                prompt("Copy this URL:", window.location.href);
-                            }
-                        }}>
+                        className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-md transition-colors"
+                        onClick={copyLink}
+                    >
                         Copy Link
                     </button>
                     <button
@@ -301,7 +321,7 @@ export default function Books() {
                 </div>
             )}
             
-            {/* Main Content Area - Flexible height */}
+            {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
                 {/*No Results*/}

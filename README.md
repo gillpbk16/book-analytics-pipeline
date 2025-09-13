@@ -1,6 +1,10 @@
 # Book Analytics Pipeline
 A full stack web application that scrapes book information, stores it in MongoDB, and provides analytics. Built to practice end-to-end data engineering and full-stack development.
 
+## Screenshot
+![Book Analytics Dashboard](screenshot.png)
+*Interactive dashboard displaying analytics from 1000+ scraped books with real-time filtering and visualization*
+
 ## Tech Stack
 - **Backend:** Python, FastAPI, MongoDB, Scrapy
 - **Frontend:** React, TypeScript, Tailwind CSS, Chart.js

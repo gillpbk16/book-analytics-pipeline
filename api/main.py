@@ -1,11 +1,26 @@
-from fastapi import FastAPI, Query, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-from api.db import load_books, DataLoadError, list_books_mongo, USE_MONGO, price_stats_mongo, availability_mongo, price_buckets_mongo
-from api.models import BookOut, BooksResponse, AvailabilityResponse, PriceStats, PriceBucketsResponse, WordsResponse
+# Standard Imports
 import logging
 import string
 from collections import Counter
+from typing import Optional
+
+# Third Party Imports
+from fastapi import FastAPI, Query, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+# Local Imports 
+from api.db import(
+    load_books, DataLoadError, list_books_mongo, USE_MONGO, 
+    price_stats_mongo, availability_mongo, price_buckets_mongo
+)
+from api.models import BookOut, BooksResponse, AvailabilityResponse, PriceStats, PriceBucketsResponse, WordsResponse
+
+"""
+Book Analytics Pipeline API
+
+REST API for analyzing book data from web scraping.
+Built with FastAPI and supports MongoDB or JSON file storage.
+"""
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -64,16 +79,18 @@ def get_books(
     offset: int = Query(0, ge=0),
     sort: Optional[str] = Query(None, pattern="^(price_asc|price_desc|title_asc|title_desc)$"),
 ):
-    """List books with optional filters.
+    """Get books with optional search and filtering.
 
-    - **q**: search term matched against book titles  
-    - **price_min / price_max**: numeric price filters  
-    - **availability**: filter by availability text (e.g. "in stock")  
-    - **limit**: number of results per page (1–100)  
-    - **offset**: number of items to skip for pagination  
-    - **sort**: sort order, one of price_asc, price_desc, title_asc, title_desc  
+    Args:
+        - q: Search text to match in book titles  
+        - price_min / price_max: Filter books by price range 
+        - availability: Filter by availability status (e.g. "in stock")  
+        - limit: Number of books per page (1–100)  
+        - offset: Number of books to skip (for pagination)  
+        - sort: Sort order - price_asc, price_desc, title_asc or title_desc  
 
-    Returns: total number of matching books and a list of items.
+    Returns:
+        Dictionary with total count and list of matching books.
     """
     try:
         if USE_MONGO: 
@@ -98,7 +115,7 @@ def get_books(
             wanted = availability.strip().lower()
             items = [item for item in items if (item.get("availability") or "").strip().lower() == wanted]
 
-        #Price Filters
+        # Price Filters
         if price_min is not None:
             items = [item for item in items if (item.get("price") is not None and item.get("price") >= price_min)]
         if price_max is not None:
@@ -124,7 +141,8 @@ def get_books(
         # Pagination
         items = items[offset: offset + limit]
         logger.info("GET /books returning %d items (total=%d)", len(items), total)
-        #wrap in an object
+        
+        # Return formatted response
         return {"total": total,
                 "items": [BookOut(**item) for item in items],
                 } 
@@ -142,16 +160,11 @@ def get_books(
     description="Availability label."
 )
 def get_availability():
-    """Count books by availability label.
-
-    Normalization:
-      - Labels are lowercased and stripped.
+    """Get count of books for each availability status. 
 
     Returns:
-      {
-        "total": <sum of counts>,
-        "buckets": [{"label": "<availability label>", "count": <int>}...]
-      }
+        Dictionary with total books and breakdown by availability
+        (e.g., "in stock", "out of stock", etc.)
     """
     try:
         if USE_MONGO:
@@ -177,11 +190,10 @@ def get_availability():
     description="Minimum, maximum, average, and count over prices."
 )
 def get_price_stats():
-    """Summary statistics over numeric prices only.
+    """Get basic price statistics for all books.
 
     Returns:
-      - count: number of books with a numeric price
-      - min, max, average: price statistics
+        Dictionary with count, minimum, maximum and average price.
     """
     try:
         if USE_MONGO:
@@ -201,25 +213,21 @@ def get_price_stats():
 
 @app.get("/analytics/price-buckets", response_model=PriceBucketsResponse)
 def get_price_buckets(bucket_size: float = Query(10.0, gt=0)):
-    """Histogram-style buckets for price distribution.
+    """Get price distribution in histogram buckets. 
 
-    Parameters:
-      - bucket_size: width of each bucket (must be > 0)
+    Args: 
+        bucket_size: Width of each price range (e.g., 10.0 for £10 buckets)
 
-    Behavior:
-      - Computes [min, max) buckets over available numeric prices.
-      - Each bucket is [lower, upper); the final bucket's upper bound will exceed max by at most one
-        bucket_size so max values are included.
-
-    Returns:
-      {"buckets": [{"lower": <float>, "upper": <float>, "count": <int>}, ...]}
+    Returns: 
+        List of price ranges with count of books in each range
     """
-    if USE_MONGO:
-        return price_buckets_mongo(bucket_size)
-    try:
+    try: 
+        if USE_MONGO:
+            return price_buckets_mongo(bucket_size)
         items = load_books()
     except DataLoadError as e:
         raise HTTPException(status_code=503, detail=str(e))
+
     prices = [item["price"] for item in items if item.get("price") is not None]
     buckets = []
     if not prices:
@@ -236,17 +244,15 @@ def get_price_buckets(bucket_size: float = Query(10.0, gt=0)):
 
 @app.get("/analytics/title-words", response_model=WordsResponse)
 def get_title_words(top_n: int = Query(10, ge=1, le=100)):
-    """Most frequent words across all book titles (simple tokenization).
+    """Get most common words used in book titles.
 
-    Parameters:
-      - top_n: number of top words to return (1–100)
-
-    Notes:
-      - Lowercases titles and strips ASCII punctuation before splitting on whitespace.
+    Args:
+        top_n: Number of top words to return (1-100)
 
     Returns:
-      {"top": [{"word": "<token>", "count": <int>}, ...]}
+        List of words and their frequency counts
     """
+
     try:
         items = load_books()
     except DataLoadError as e:

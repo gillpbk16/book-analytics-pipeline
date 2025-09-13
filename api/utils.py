@@ -1,7 +1,10 @@
+"""Utility functions for data processing."""
+
 import math
 from typing import Optional, Union 
 
 NumberLike = Union[str, float, int, None]
+
 
 def parse_price(value: NumberLike) -> Optional[float]:
     try:
@@ -13,11 +16,14 @@ def parse_price(value: NumberLike) -> Optional[float]:
             .replace(",", "")
             .strip()
         )
+
         if not s: 
             return None
+        
         x = float(s)
         if math.isnan(x) or math.isinf(x):
             return None
+        
         return x
     except Exception:
         return None

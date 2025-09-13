@@ -1,18 +1,18 @@
-#api/Dockerfile
+# api/Dockerfile
 FROM python:3.11-slim
 
-# OS deps (adjust if you need others)
+# Install OS dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl build-essential && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-#Install Python deps from requirements.txt in project root
+# Install Python deps from requirements.txt in project root
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-#Copy only the API source code
+# Copy only the API source code
 COPY api/ /app/api
 
 EXPOSE 8000

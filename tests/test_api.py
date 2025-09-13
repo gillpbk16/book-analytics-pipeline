@@ -1,8 +1,10 @@
+# Test helper functions
 def get_items(response):
     data = response.json()
     assert "items" in data
     return data["items"]
 
+# Basic functionality tests
 def test_health(client):
     r = client.get("/health")
     assert r.status_code == 200
@@ -16,12 +18,11 @@ def test_books_basic(client):
     assert len(items) == 4
     assert {"id", "title", "url", "price", "availability"}.issubset(items[0].keys())
 
-
+# Filtering tests
 def test_books_q_filter(client):
     r = client.get("/books", params={"q":"cat"})
     title = [item["title"].lower() for item in get_items(r)]
     assert title == ["the cat", "another cat tale"]
-
 
 def test_books_price_min(client):
     r = client.get("/books", params={"price_min": 20})
@@ -38,7 +39,7 @@ def test_books_availability(client):
     ids = [item["id"] for item in get_items(r)]
     assert ids == ["1", "2", "4"]
 
-
+# Sorting and pagination tests
 def test_books_sort_price_asc(client):
     r = client.get("/books", params={"sort": "price_asc"})
     prices = [item["price"] for item in get_items(r)]
@@ -61,13 +62,12 @@ def test_analytics(client):
     assert bucket_map.get("in stock") == 3
     assert bucket_map.get("out of stock") == 1
 
-
 def test_books_combined_filters(client):
     r = client.get("/books", params={"q": "cat", "price_min": 5, "price_max": 15, "availability": "in stock"})
     items = [item["id"] for item in get_items(r)]
     assert items == ["1"]
     
-
+# Edge case tests
 def test_book_offset_beyond_total(client):
     r = client.get("/books", params={"limit":10, "offset": 999})
     assert r.status_code == 200
@@ -75,13 +75,12 @@ def test_book_offset_beyond_total(client):
     assert data["total"] == 4
     assert data["items"] == []
 
-
 def test_book_pricemin_greater_than_pricemax(client):
     r = client.get("/books", params={"price_min": 30, "price_max": 20})
     data = r.json()
     assert data["items"] == []
 
-
+# Analytics tests
 def test_price_buckets_tiny_and_large(client, monkeypatch):
     custom = [
         {"id": "a", "title": "A", "url": "ua", "price": 0.0,  "availability": "in stock"},
@@ -92,12 +91,14 @@ def test_price_buckets_tiny_and_large(client, monkeypatch):
     
     monkeypatch.setattr("api.main.load_books", lambda: custom,  raising=True)
 
+     # Test small bucket size
     r_small = client.get("/analytics/price-buckets", params={"bucket_size": 5})
     assert r_small.status_code == 200
     buckets_small = r_small.json()["buckets"]
     counts = [item["count"] for item in buckets_small]
     assert counts == [1,1,1,1]
 
+    # Test large bucket size
     r_large = client.get("/analytics/price-buckets", params={"bucket_size": 100})
     assert r_large.status_code == 200
     buckets_large = r_large.json()["buckets"]

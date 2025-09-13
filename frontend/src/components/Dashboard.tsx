@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { bookAPI } from "../services/api";
 import type { PriceStats, ApiResponse, StatProps } from "../types";
 
+// Main dashboard displaying price statistics for book collection
 export default function Dashboard() {
     const[priceStats, setPriceStats] = useState<PriceStats | null>(null);
     const[loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ export default function Dashboard() {
                 setLoading(false);
             }
         };
+
         fetchStats();
     }, []);
 
@@ -28,7 +30,7 @@ export default function Dashboard() {
     if (error) return <ErrorMessage error={error}/>; 
 
     return (
-        <div className="rounded-xl bg-violet-50 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div className="rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                 <Stat label="With price" value={priceStats?.count ?? 0} /> 
                 <Stat label="Minimum price" value={fmt(priceStats?.min)} />
@@ -36,11 +38,10 @@ export default function Dashboard() {
                 <Stat label="Maximum price" value={fmt(priceStats?.max)} />            
             </div>
         </div>
-        
-
     );
 }
 
+// Individual statistic card with hover effects
 function Stat({label , value, loading = false }: StatProps) {
     if (loading) {
         return(
@@ -50,6 +51,7 @@ function Stat({label , value, loading = false }: StatProps) {
             </div>
         );
     }
+    
     return(
         <div className="p-4 border border-gray-200 rounded-lg bg-gradient-to-br from-gray-50 to-white hover:to-white hover:border-blue-200 transition-all duration-200 group">
             <div className="text-xs text-gray-600 uppercase tracking-wide font-medium mb-2">
@@ -63,11 +65,12 @@ function Stat({label , value, loading = false }: StatProps) {
     );
 }
 
-function fmt( n : number | null | undefined) { 
+// Format price values as £X.XX or "-" for null/undefined
+function fmt( n : number | null | undefined): string { 
     return typeof n === "number" ? `£${n.toFixed(2)}` : "-" ;
 }
 
-
+// Animated loading skeleton matching dashboard layout
 function LoadingSkeleton() {
   return (
     <div className="rounded-xl border border-gray-200 bg-white shadow-md">
@@ -89,6 +92,7 @@ function LoadingSkeleton() {
   );
 }
 
+// Error display with reload button
 function ErrorMessage({ error }: { error: string }) {
   return (
     <div className="rounded-xl border border-red-200 bg-red-50 p-6">

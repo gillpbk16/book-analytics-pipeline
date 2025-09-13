@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { bookAPI } from "../services/api";
 import type { WordsResponse } from "../types";
 
+// Displays most frequent words found in book titles with configurable count
 export default function TopTitleWords() {
     const [data, setData] = useState<WordsResponse| null>(null);
     const [loading, setLoading] = useState(true);
@@ -67,22 +68,22 @@ export default function TopTitleWords() {
 
     return (
         <div className="bg-white p-5 rounded-xl shadow-md h-full flex flex-col">
-
+            {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Top Title Words</h2>
                 <div className="flex items-center gap-2">
                     <label htmlFor="top-n" className="text-sm text-gray-600 font-medium">
-                    Top N
+                        Top N
                     </label>
                     <select
-                    id="top-n"
-                    value={topN}
-                    onChange={(e) => setTopN(Number(e.target.value))}
-                    className="h-9 rounded-lg border border-violet-300 bg-violet-50 px-3 text-sm text-violet-700 font-medium hover:bg-violet-100 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none"
+                        id="top-n"
+                        value={topN}
+                        onChange={(e) => setTopN(Number(e.target.value))}
+                        className="h-9 rounded-lg border border-violet-300 bg-violet-50 px-3 text-sm text-violet-700 font-medium hover:bg-violet-100 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none"
                     >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
                     </select>
                 </div>
             </div>
