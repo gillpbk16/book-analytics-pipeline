@@ -1,0 +1,27 @@
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: book-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./data:/docker-entrypoint-initdb.d
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    environment:
+      USE_MONGO: "true"
+      MONGODB_URL: "mongodb://mongo:27017"
+      MONGODB_DB: "booksdb"
+      MONGODB_COLLECTION: "books"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
