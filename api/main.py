@@ -126,9 +126,10 @@ def get_books(
         # Sorting 
         if sort: 
             if sort.startswith("price_"):
+                priced_items = [item for item in items if item.get("price") is not None]
                 items = sorted(
-                    items, 
-                    key=lambda x: (x.get("price") is None, x.get("price", 0)), 
+                    priced_items, 
+                    key=lambda x: x["price"], 
                     reverse=(sort == "price_desc")
                 )
             elif sort.startswith("title_"):

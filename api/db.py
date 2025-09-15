@@ -211,6 +211,12 @@ def list_books_mongo(
     
     coll = get_collection()
     query = build_mongo_query(q, availability, price_min, price_max)
+    
+    if sort in ("price_asc", "price_desc"):
+        price_filter = query.get("price_num", {})
+        price_filter["$ne"] = None
+        query["price_num"] = price_filter
+
     total = coll.count_documents(query)
     sort_spec = _mongo_sort(sort)
     cursor = coll.find(

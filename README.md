@@ -1,3 +1,8 @@
+![Build](https://img.shields.io/github/actions/workflow/status/gillpbk16/book-analytics-pipeline)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Tech](https://img.shields.io/badge/Stack-FastAPI%20|%20React%20|%20MongoDB%20|%20Docker-blue)
+
+
 # Book Analytics Pipeline
 A full stack web application that scrapes book information, stores it in MongoDB, and provides analytics. Built to practice end-to-end data engineering and full-stack development.
 
